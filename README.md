@@ -1,2 +1,2 @@
-# clean_code_mvvm
-Sample android app using mvvm clean architecture with out DI
+# Kotlin application using mvvm + clean code
+kotlin android app using mvvm clean architecture with out DI
