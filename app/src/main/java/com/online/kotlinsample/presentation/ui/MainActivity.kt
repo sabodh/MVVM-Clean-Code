@@ -1,52 +1,67 @@
 package com.online.kotlinsample.presentation.ui
-
 import android.os.Bundle
-import android.util.Log
+import android.view.Gravity
+import android.view.View
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.online.kotlinsample.data.api.ServiceBuilder
-import com.online.kotlinsample.data.api.ServiceEndPoints
-import com.online.kotlinsample.data.api.UiState
-import com.online.kotlinsample.data.model.Product
-import com.online.kotlinsample.data.repository.ProductRepositoryImpl
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.navigation.findNavController
+import com.online.kotlinsample.R
 import com.online.kotlinsample.databinding.ActivityMainBinding
-import com.online.kotlinsample.domain.usecases.ProductDetailsUseCases
-import com.online.kotlinsample.domain.usecases.ProductListUseCase
-import com.online.kotlinsample.presentation.viewmodels.ProductViewModel
-import com.online.kotlinsample.presentation.viewmodels.ProductViewModelFactory
+import com.online.kotlinsample.databinding.ToolbarLayoutBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var actionbarBinding: ToolbarLayoutBinding? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val serviceBuilder = ServiceBuilder.buildService(ServiceEndPoints::class.java)
-        val productRepository = ProductRepositoryImpl(serviceBuilder)
-        val productListUseCase = ProductListUseCase(productRepository)
-        val productDetailsUseCases = ProductDetailsUseCases(productRepository)
-        val productViewModelFactory = ProductViewModelFactory(productListUseCase, productDetailsUseCases)
-        val productViewModel = ViewModelProvider(this, productViewModelFactory)
-            .get(ProductViewModel::class.java)
+        setCustomActionbar()
 
-        val observer = Observer<UiState<List<Product>>>{ state->
-            when(state){
-                is UiState.Loading->{
-                    Log.e("result","Loading");
-                }
-                is UiState.Error -> {
-                    Log.e("result","Error");
-                }
-                is UiState.Success -> {
-                    Log.e("result","Success ${state.data.size}");
-                }
-            }
-        }
-        productViewModel.productList.observe(this, observer)
     }
 
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        return navController.navigateUp()
+                || super.onSupportNavigateUp()
+    }
+
+    /**
+     * Handling actionbar configurations
+     */
+    private fun setCustomActionbar() {
+        actionbarBinding = ToolbarLayoutBinding.inflate(layoutInflater)
+        actionbarBinding?.backMenu?.visibility = View.GONE
+        actionbarBinding?.backMenu?.setOnClickListener {
+            onSupportNavigateUp()
+            setHeader(getString(R.string.app_name), Gravity.CENTER, View.GONE)
+        }
+        supportActionBar?.apply {
+            displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+            setBackgroundDrawable(AppCompatResources.getDrawable(baseContext, R.color.white))
+            customView = actionbarBinding?.root
+        }
+        setHeader(getString(R.string.app_name), Gravity.CENTER, View.GONE)
+    }
+    fun setHeader(header: String, gravity: Int, visibility: Int) {
+        actionbarBinding?.actionBarTitle?.text = header
+        handleActionbar(gravity, visibility)
+    }
+
+    private fun handleActionbar(gravity: Int, visibility: Int) {
+        actionbarBinding?.let {
+            it.actionBarTitle.gravity = gravity
+            it.backMenu.visibility = visibility
+        }
+    }
 
 }

@@ -5,9 +5,10 @@ import com.online.kotlinsample.data.api.UiState
 import com.online.kotlinsample.data.model.Product
 import com.online.kotlinsample.domain.repository.ProductRepository
 import java.net.UnknownHostException
+import javax.inject.Inject
 
-class ProductRepositoryImpl(private val serviceEndPoints: ServiceEndPoints) : ProductRepository {
-
+class ProductRepositoryImpl @Inject constructor(
+    private val serviceEndPoints: ServiceEndPoints) : ProductRepository {
     override suspend fun getProductList(): UiState<List<Product>> {
         return try {
             val response = serviceEndPoints.getProductList()

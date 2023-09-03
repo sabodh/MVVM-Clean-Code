@@ -7,9 +7,12 @@ import com.online.kotlinsample.data.api.UiState
 import com.online.kotlinsample.data.model.Product
 import com.online.kotlinsample.domain.usecases.ProductDetailsUseCases
 import com.online.kotlinsample.domain.usecases.ProductListUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProductViewModel(
+@HiltViewModel
+class ProductViewModel @Inject constructor (
     val productListUseCase: ProductListUseCase,
     val productDetailsUseCases: ProductDetailsUseCases
 ) : ViewModel() {
@@ -23,7 +26,7 @@ class ProductViewModel(
         getProductList()
     }
 
-    private fun getProductList() {
+    fun getProductList() {
         viewModelScope.launch {
             _productList.postValue(UiState.Loading)
             val response = productListUseCase()

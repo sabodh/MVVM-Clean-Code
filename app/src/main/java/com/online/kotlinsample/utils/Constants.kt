@@ -16,5 +16,5 @@ object Constants {
     const val BUNDLE_PRODUCT_ID = "productId"
     const val BUNDLE_PRODUCT_PRICE = "productPrice"
     const val BUNDLE_PRODUCT_PRICE_DEFAULT = "£ 0.00"
-
+    const val HTTP_TIMEOUT = 30L
 }
